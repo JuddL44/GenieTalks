@@ -4,6 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class UserController: ControllerBase
 {
+    private readonly UserService _service;
+    public UserController(UserService service)
+    {
+        _service = service;
+    }
+
+
     [HttpGet("{id}")]
     public IActionResult GetUserById(Guid id)
     {
@@ -17,7 +24,7 @@ public class UserController: ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateUser(CreateUser user)
+    public IActionResult CreateUser(CreateUserRequest user)
     {
         throw new NotImplementedException();
     }
