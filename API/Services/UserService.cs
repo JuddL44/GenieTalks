@@ -17,13 +17,49 @@ public class UserService : IUserService
         //
         // Is the password valid?
         //
-        if (!userReq.Password.Any(char.IsUpper) || !userReq.Password.Any(char.IsLower) || !userReq.Password.Any(char.IsDigit))
+        if (userReq.Password.Length <= 6)
         {
             return new ServiceResult<UserResponse>
             (
                 false,
                 null,
-                "Passwords must contain an uppercase letter, a lowercase letter, and a number!"
+                "Password must be longer than 6 characters!"
+            );
+        }
+        if (userReq.Password.Length >= 26)
+        {
+            return new ServiceResult<UserResponse>
+            (
+                false,
+                null,
+                "Password must be shorter than 26 characters!"
+            );
+        }
+        if (!userReq.Password.Any(char.IsUpper))
+        {
+            return new ServiceResult<UserResponse>
+            (
+                false,
+                null,
+                "Password must contain an uppercase letter!"
+            );
+        }
+        if (!userReq.Password.Any(char.IsLower))
+        {
+            return new ServiceResult<UserResponse>
+            (
+                false,
+                null,
+                "Password must contain a lowercase letter!"
+            );
+        }
+        if (!userReq.Password.Any(char.IsDigit))
+        {
+            return new ServiceResult<UserResponse>
+            (
+                false,
+                null,
+                "Password must contain atleast one number!"
             );
         }
         //
