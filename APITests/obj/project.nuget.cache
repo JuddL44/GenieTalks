@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "/FEEXJ5ka3c=",
+  "dgSpecHash": "1+7H/OoJV68=",
   "success": true,
   "projectFilePath": "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\APITests\\APITests.csproj",
   "expectedPackageFiles": [
@@ -15,6 +15,7 @@
     "C:\\Users\\lasat\\.nuget\\packages\\microsoft.entityframeworkcore\\8.0.0\\microsoft.entityframeworkcore.8.0.0.nupkg.sha512",
     "C:\\Users\\lasat\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\8.0.0\\microsoft.entityframeworkcore.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\lasat\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\8.0.0\\microsoft.entityframeworkcore.analyzers.8.0.0.nupkg.sha512",
+    "C:\\Users\\lasat\\.nuget\\packages\\microsoft.entityframeworkcore.inmemory\\8.0.0\\microsoft.entityframeworkcore.inmemory.8.0.0.nupkg.sha512",
     "C:\\Users\\lasat\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\8.0.0\\microsoft.entityframeworkcore.relational.8.0.0.nupkg.sha512",
     "C:\\Users\\lasat\\.nuget\\packages\\microsoft.entityframeworkcore.sqlserver\\8.0.0\\microsoft.entityframeworkcore.sqlserver.8.0.0.nupkg.sha512",
     "C:\\Users\\lasat\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",

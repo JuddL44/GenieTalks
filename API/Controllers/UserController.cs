@@ -1,13 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/[controller]")]
 public class UserController: ControllerBase
 {
-    private readonly UserService _service;
-    public UserController(UserService service)
+    private readonly AppDbContext _context;
+    private readonly UserService _userService;
+    public UserController(AppDbContext context, UserService userService)
     {
-        _service = service;
+        _context = context;
+        _userService = userService;
     }
 
 
@@ -24,9 +27,17 @@ public class UserController: ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateUser(CreateUserRequest user)
+    public async Task<IActionResult> CreateUser(CreateUserRequest user)
     {
-        throw new NotImplementedException();
+        var result = await _userService.CreateUserAsync(user);
+        if (result.Success == true)
+        {
+            return Ok(result.Data);
+        }
+        else
+        {
+            return BadRequest(new {message = result.Error});
+        }
     }
 
     [HttpDelete("{id}")]
