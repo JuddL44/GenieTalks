@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "qjE/2z6TWQs=",
+  "dgSpecHash": "CsjP7UMpx4M=",
   "success": true,
-  "projectFilePath": "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj",
+  "projectFilePath": "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lasat\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\lasat\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

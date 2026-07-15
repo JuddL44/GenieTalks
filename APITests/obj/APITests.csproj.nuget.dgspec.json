@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\APITests\\APITests.csproj": {}
+    "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\APITests\\APItests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\APITests\\APITests.csproj": {
+    "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\APITests\\APItests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\APITests\\APITests.csproj",
-        "projectName": "APITests",
-        "projectPath": "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\APITests\\APITests.csproj",
+        "projectUniqueName": "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\APITests\\APItests.csproj",
+        "projectName": "APItests",
+        "projectPath": "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\APITests\\APItests.csproj",
         "packagesPath": "C:\\Users\\lasat\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\APITests\\obj\\",
+        "outputPath": "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\APITests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,8 +32,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj": {
-                "projectPath": "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj"
+              "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj": {
+                "projectPath": "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj"
               }
             }
           }
@@ -95,14 +95,14 @@
         }
       }
     },
-    "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj": {
+    "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj",
+        "projectUniqueName": "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj",
+        "projectPath": "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\API.csproj",
         "packagesPath": "C:\\Users\\lasat\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\obj\\",
+        "outputPath": "c:\\Users\\lasat\\OneDrive\\Desktop\\New folder (2)\\GenieTalks\\API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

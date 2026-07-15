@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -31,9 +32,22 @@ public class UserServiceTests
         var result = await service.CreateUserAsync(request);
 
         Assert.False(result.Success);
-        Assert.Equal("An account with that email already exists!", result.Error);
+        Assert.Equal("An account with that email already exists!", result.Log);
         Assert.Equal(1, await context.Users.CountAsync());
-
+    }
+    [Fact]
+    public async Task CreateUserAsync_ContainsInvalidEmail_ReturnsFailure()
+    {
+        await using var context = CreateDbContext();
+        var service = new UserService(context);
+        var request = new CreateUserRequest
+        {
+            Email = "JohnDoe@gmailcom",
+            Password = "Password123!"
+        };
+        var result = await service.CreateUserAsync(request);
+        Assert.False(result.Success);
+        Assert.Equal("Please enter a valid email address!", result.Log);
     }
     [Fact]
     public async Task CreateUserAsync_NoUppercaseWithinPassword_ReturnsFailure()
@@ -47,7 +61,7 @@ public class UserServiceTests
         };
         var result = await service.CreateUserAsync(request);
         Assert.False(result.Success);
-        Assert.Equal("Password must contain an uppercase letter!", result.Error);
+        Assert.Equal("Password must contain an uppercase letter!", result.Log);
     }
     [Fact]
     public async Task CreateUserAsync_NoLowercaseithinPassword_ReturnsFailure()
@@ -61,7 +75,7 @@ public class UserServiceTests
         };
         var result = await service.CreateUserAsync(request);
         Assert.False(result.Success);
-        Assert.Equal("Password must contain a lowercase letter!", result.Error);
+        Assert.Equal("Password must contain a lowercase letter!", result.Log);
     }
     [Fact]
     public async Task CreateUserAsync_NoNumberWithinPassword_ReturnsFailure()
@@ -75,7 +89,7 @@ public class UserServiceTests
         };
         var result = await service.CreateUserAsync(request);
         Assert.False(result.Success);
-        Assert.Equal("Password must contain atleast one number!", result.Error);
+        Assert.Equal("Password must contain atleast one number!", result.Log);
     }
     [Fact]
     public async Task CreateUserAsync_PasswordLessThan7Characters_ReturnsFailure()
@@ -89,7 +103,7 @@ public class UserServiceTests
         };
         var result = await service.CreateUserAsync(request);
         Assert.False(result.Success);
-        Assert.Equal("Password must be longer than 6 characters!", result.Error);
+        Assert.Equal("Password must be longer than 6 characters!", result.Log);
     }
     [Fact]
     public async Task CreateUserAsync_PasswordMoreThan26Characters_ReturnsFailure()
@@ -103,6 +117,24 @@ public class UserServiceTests
         };
         var result = await service.CreateUserAsync(request);
         Assert.False(result.Success);
-        Assert.Equal("Password must be shorter than 26 characters!", result.Error);
+        Assert.Equal("Password must be shorter than 26 characters!", result.Log);
+    }
+
+    [Fact]
+    public async Task CreateUserAsync_EverythingValid_ReturnsSuccess()
+    {
+        await using var context = CreateDbContext();
+        var service = new UserService(context);
+        var request = new CreateUserRequest
+        {
+            Email = "JaneDoe@hotmail.com",
+            Password = "SecurePassword123"
+        };
+        var result = await service.CreateUserAsync(request);
+        Assert.True(result.Success);
+        Assert.Equal("Success!", result.Log);
+        Assert.Equal("JaneDoe@hotmail.com", result.Data?.Email);
+        Assert.Equal("JaneDoe", result.Data?.ShortenedEmail);
+        Assert.Equal(1, await context.Users.CountAsync());
     }
 }

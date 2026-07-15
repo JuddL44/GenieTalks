@@ -36,7 +36,7 @@ public class UserController: ControllerBase
         }
         else
         {
-            return BadRequest(new {message = result.Error});
+            return BadRequest(new {message = result.Log});
         }
     }
 
