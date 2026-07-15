@@ -176,4 +176,200 @@ public class UserServiceTests
         Assert.False(result.Success);
         Assert.Equal($"Could not find user with ID: {fakeId}", result.Log);
     }
+
+    [Fact]
+    public async Task UpdateUserByIdAsync_InvalidId_ReturnsFailure()
+    {
+        await using var context = CreateDbContext();
+        Guid fakeId = new Guid();
+        var service = new UserService(context);
+        UpdateUserRequest request = new UpdateUserRequest
+        {
+            Email = null,
+            Password = "NewPassword123!"
+        };
+        var result = await service.UpdateUserByIdAsync(request, fakeId);
+        Assert.False(result.Success);
+        Assert.Equal($"Could not find user with ID: {fakeId}", result.Log);
+    }
+
+    [Fact]
+    public async Task UpdateUserByIdAsync_InvalidEmail_ReturnsFailure()
+    {
+        await using var context = CreateDbContext();
+        var user = new User
+        {
+            Email = "JohnDoe@gmail.com",
+            PasswordHash = "john-doe-password-hash"
+        };
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+        var service = new UserService(context);
+        UpdateUserRequest request = new UpdateUserRequest
+        {
+            Email = "JohnDoe@gmailcom",
+            Password = null
+        };
+        var result = await service.UpdateUserByIdAsync(request, user.Id);
+        Assert.False(result.Success);
+        Assert.Equal("Please enter a valid email address!", result.Log);
+    }
+
+    [Fact]
+    public async Task UpdateUserByIdAsync_EverythingValid_ReturnsSuccess()
+    {
+        await using var context = CreateDbContext();
+        var user = new User
+        {
+            Email = "JohnDoe@gmail.com",
+            PasswordHash = "john-doe-password-hash"
+        };
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+        var service = new UserService(context);
+        UpdateUserRequest request = new UpdateUserRequest
+        {
+            Email = "JaneDoe@hotmail.com",
+            Password = "NewPassword1234!2"
+        };
+        var result = await service.UpdateUserByIdAsync(request, user.Id);
+        Assert.True(result.Success);
+        Assert.Equal("Successfully updated user!", result.Log);
+    }
+
+    [Fact]
+    public async Task UpdateUserByIdAsync_PasswordTooShort_ReturnsFailure()
+    {
+        await using var context = CreateDbContext();
+        var user = new User
+        {
+            Email = "JohnDoe@gmail.com",
+            PasswordHash = "john-doe-password-hash"
+        };
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+        var service = new UserService(context);
+        UpdateUserRequest request = new UpdateUserRequest
+        {
+            Email = "JaneDoe@hotmail.com",
+            Password = "Pas3!"
+        };
+        var result = await service.UpdateUserByIdAsync(request, user.Id);
+        Assert.False(result.Success);
+        Assert.Equal("Password must be longer than 6 characters!", result.Log);
+    }
+
+    [Fact]
+    public async Task UpdateUserByIdAsync_PasswordTooLong_ReturnsFailure()
+    {
+        await using var context = CreateDbContext();
+        var user = new User
+        {
+            Email = "JohnDoe@gmail.com",
+            PasswordHash = "john-doe-password-hash"
+        };
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+        var service = new UserService(context);
+        UpdateUserRequest request = new UpdateUserRequest
+        {
+            Email = "JaneDoe@hotmail.com",
+            Password = "JaneDoesVeryLongUpdatedPassword12345678910!"
+        };
+        var result = await service.UpdateUserByIdAsync(request, user.Id);
+        Assert.False(result.Success);
+        Assert.Equal("Password must be shorter than 26 characters!", result.Log);
+    }
+
+    [Fact]
+    public async Task UpdateUserByIdAsync_PasswordNoUppercaseLetter_ReturnsFailure()
+    {
+        await using var context = CreateDbContext();
+        var user = new User
+        {
+            Email = "JohnDoe@gmail.com",
+            PasswordHash = "john-doe-password-hash"
+        };
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+        var service = new UserService(context);
+        UpdateUserRequest request = new UpdateUserRequest
+        {
+            Email = "JaneDoe@hotmail.com",
+            Password = "password1234!"
+        };
+        var result = await service.UpdateUserByIdAsync(request, user.Id);
+        Assert.False(result.Success);
+        Assert.Equal("Password must contain an uppercase letter!", result.Log);
+    }
+    [Fact]
+    public async Task UpdateUserByIdAsync_PasswordNoLowercaseLetter_ReturnsFailure()
+    {
+        await using var context = CreateDbContext();
+        var user = new User
+        {
+            Email = "JohnDoe@gmail.com",
+            PasswordHash = "john-doe-password-hash"
+        };
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+        var service = new UserService(context);
+        UpdateUserRequest request = new UpdateUserRequest
+        {
+            Email = "JaneDoe@hotmail.com",
+            Password = "PASSWORD6789?"
+        };
+        var result = await service.UpdateUserByIdAsync(request, user.Id);
+        Assert.False(result.Success);
+        Assert.Equal("Password must contain a lowercase letter!", result.Log);
+    }
+    [Fact]
+    public async Task UpdateUserByIdAsync_PasswordDoesntContainNumber_ReturnsFailure()
+    {
+        await using var context = CreateDbContext();
+        var user = new User
+        {
+            Email = "JohnDoe@gmail.com",
+            PasswordHash = "john-doe-password-hash"
+        };
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+        var service = new UserService(context);
+        UpdateUserRequest request = new UpdateUserRequest
+        {
+            Email = "JaneDoe@hotmail.com",
+            Password = "NewPasswordNew!"
+        };
+        var result = await service.UpdateUserByIdAsync(request, user.Id);
+        Assert.False(result.Success);
+        Assert.Equal("Password must contain atleast one number!", result.Log);
+    }
+
+    [Fact]
+    public async Task DeleteUserByIdAsync_InvalidId_ReturnsFailure()
+    {
+        await using var context = CreateDbContext();
+        Guid fakeId = new Guid();
+        var service = new UserService(context);
+        var result = await service.DeleteUserByIdAsync(fakeId);
+        Assert.False(result.Success);
+        Assert.Equal($"Could not find user with ID: {fakeId}", result.Log);
+    }
+
+    [Fact]
+    public async Task DeleteUserByIdAsync_ValidId_ReturnsSuccess()
+    {
+        await using var context = CreateDbContext();
+        var user = new User
+        {
+            Email = "JohnDoe@gmail.com",
+            PasswordHash = "john-doe-password-hash"
+        };
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+        var service = new UserService(context);
+        var result = await service.DeleteUserByIdAsync(user.Id);
+        Assert.True(result.Success);
+        Assert.Equal("Successfully deleted user.", result.Log);
+    }
 }

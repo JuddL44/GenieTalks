@@ -31,9 +31,17 @@ public class UserController: ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public IActionResult UpdateUserById(Guid id)
+    public async Task<IActionResult> UpdateUserById(UpdateUserRequest update, Guid id)
     {
-        throw new NotImplementedException();
+        var result = await _userService.UpdateUserByIdAsync(update, id);
+        if (result.Success == true)
+        {
+            return Ok(result.Data);
+        }
+        else
+        {
+            return BadRequest(new {message = result.Log});
+        }
     }
 
     [HttpPost]
@@ -51,8 +59,16 @@ public class UserController: ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteUserById(Guid id)
+    public async Task<IActionResult> DeleteUserById(Guid id)
     {
-        throw new NotImplementedException();
+        var result = await _userService.DeleteUserByIdAsync(id);
+        if (result.Success == true)
+        {
+            return Ok(result.Data);
+        }
+        else
+        {
+            return BadRequest(new {message = result.Log});
+        }
     }
 }

@@ -17,49 +17,14 @@ public class UserService : IUserService
         //
         // Is the password valid?
         //
-        if (userReq.Password.Length <= 6)
+        string passwordStatus = IsValidPasswordFormat(userReq.Password);
+        if (passwordStatus != "Success")
         {
             return new ServiceResult<UserResponse>
             (
                 false,
                 null,
-                "Password must be longer than 6 characters!"
-            );
-        }
-        if (userReq.Password.Length >= 26)
-        {
-            return new ServiceResult<UserResponse>
-            (
-                false,
-                null,
-                "Password must be shorter than 26 characters!"
-            );
-        }
-        if (!userReq.Password.Any(char.IsUpper))
-        {
-            return new ServiceResult<UserResponse>
-            (
-                false,
-                null,
-                "Password must contain an uppercase letter!"
-            );
-        }
-        if (!userReq.Password.Any(char.IsLower))
-        {
-            return new ServiceResult<UserResponse>
-            (
-                false,
-                null,
-                "Password must contain a lowercase letter!"
-            );
-        }
-        if (!userReq.Password.Any(char.IsDigit))
-        {
-            return new ServiceResult<UserResponse>
-            (
-                false,
-                null,
-                "Password must contain atleast one number!"
+                passwordStatus
             );
         }
         //
@@ -103,6 +68,7 @@ public class UserService : IUserService
         {
             Email = user.Email
         };
+
         return new ServiceResult<UserResponse>(
             true,
             response,
@@ -137,14 +103,85 @@ public class UserService : IUserService
         }
     }
 
+    public async Task<ServiceResult<UserResponse>> UpdateUserByIdAsync(UpdateUserRequest update, Guid id)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user == null)
+        {
+            return new ServiceResult<UserResponse>
+            (
+                false,
+                null,
+                $"Could not find user with ID: {id}"
+            );
+        }
+        if (update.Email != null)
+        {
+            if (IsValidEmailFormat(update.Email))
+            {
+                user.Email = update.Email;
+            }
+            else
+            {
+                return new ServiceResult<UserResponse>
+                (
+                    false,
+                    null,
+                    "Please enter a valid email address!"
+                );           
+            }
+        }
+        if (update.Password != null)
+        {
+            string passwordStatus = IsValidPasswordFormat(update.Password);
+            if (passwordStatus == "Success")
+            {
+                PasswordService _service = new PasswordService(); 
+                user.PasswordHash = _service.Hash(update.Password);
+            }
+            else
+            {
+                return new ServiceResult<UserResponse>
+                (
+                    false,
+                    null,
+                    passwordStatus
+                );
+            }
+        }
+        var result = new UserResponse
+        {
+            Email = user.Email,
+        };
+        await _context.SaveChangesAsync();
+        return new ServiceResult<UserResponse>
+        (
+            true,
+            result,
+            "Successfully updated user!"
+        );
+    }
 
-
-
-
-
-
-
-
+    public async Task<ServiceResult<UserResponse>> DeleteUserByIdAsync(Guid id)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user == null)
+        {
+            return new ServiceResult<UserResponse>
+            (
+                false,
+                null,
+                $"Could not find user with ID: {id}"
+            );
+        }
+        _context.Users.Remove(user);
+        return new ServiceResult<UserResponse>
+        (
+            true,
+            null,
+            "Successfully deleted user."
+        );
+    }
 
 
     bool IsValidEmailFormat(string email)
@@ -163,4 +200,14 @@ public class UserService : IUserService
             return false;
         }
     }
+    string IsValidPasswordFormat(string password)
+    {
+        if (password.Length <= 6) return "Password must be longer than 6 characters!";
+        if (password.Length >= 26) return "Password must be shorter than 26 characters!";
+        if (!password.Any(char.IsUpper)) return "Password must contain an uppercase letter!";
+        if (!password.Any(char.IsLower)) return "Password must contain a lowercase letter!";
+        if (!password.Any(char.IsDigit)) return "Password must contain atleast one number!";
+        return "Success";
+    }
 }
+
