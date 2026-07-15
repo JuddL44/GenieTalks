@@ -110,11 +110,32 @@ public class UserService : IUserService
         );
     }
 
-
-
-
-
-
+    public async Task<ServiceResult<UserResponse>> GetUserByIdAsync(Guid id)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user != null)
+        {
+            var response = new UserResponse
+            {
+                Email = user.Email,
+            };
+            return new ServiceResult<UserResponse>
+            (
+                true,
+                response,
+                "Successfully found user!"
+            );
+        }
+        else
+        {
+            return new ServiceResult<UserResponse>
+            (
+                false,
+                null,
+                $"Could not find user with ID: {id}"
+            );
+        }
+    }
 
 
 

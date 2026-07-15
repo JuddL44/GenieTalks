@@ -137,4 +137,43 @@ public class UserServiceTests
         Assert.Equal("JaneDoe", result.Data?.ShortenedEmail);
         Assert.Equal(1, await context.Users.CountAsync());
     }
+
+
+
+
+
+
+
+
+
+    [Fact]
+    public async Task GetUserByIdAsync_ValidId_ReturnsSuccess()
+    {
+        await using var context = CreateDbContext();
+        var user = new User
+        {
+            Email = "JohnDoe@gmail.com",
+            PasswordHash ="john-doe-password-hash"
+        };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var service = new UserService(context);
+        var result = await service.GetUserByIdAsync(user.Id);
+
+        Assert.True(result.Success);
+        Assert.Equal("Successfully found user!", result.Log);
+        Assert.Equal("JohnDoe", result.Data?.ShortenedEmail);
+    }
+
+    [Fact]
+    public async Task GetUserByIdAsync_InvalidId_ReturnsFailure()
+    {
+        await using var context = CreateDbContext();
+        Guid fakeId = new Guid();
+        var service = new UserService(context);
+        var result = await service.GetUserByIdAsync(fakeId);
+        Assert.False(result.Success);
+        Assert.Equal($"Could not find user with ID: {fakeId}", result.Log);
+    }
 }

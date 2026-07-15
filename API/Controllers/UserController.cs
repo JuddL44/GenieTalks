@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +16,18 @@ public class UserController: ControllerBase
 
 
     [HttpGet("{id}")]
-    public IActionResult GetUserById(Guid id)
+    public async Task<IActionResult> GetUserById(Guid id)
     {
-        throw new NotImplementedException();
+        var result = await _userService.GetUserByIdAsync(id);
+        if (result.Success == true)
+        {
+            return Ok(result.Data);
+        }
+        else
+        {
+            return BadRequest(new {message = result.Log});
+        }
+
     }
 
     [HttpPatch("{id}")]
