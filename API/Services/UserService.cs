@@ -56,17 +56,24 @@ public class UserService : IUserService
         // Creating the user
         //
         PasswordService _service = new PasswordService(); 
-        User user = new User
+        User newUser = new User
         {
             Email = userReq.Email,
             PasswordHash = _service.Hash(userReq.Password)
         };
-        _context.Users.Add(user);
+        CreditWallet wallet = new CreditWallet
+        {
+            UserId = newUser.Id,
+            user = newUser,
+            Balance = 0
+        };
+        newUser.CreditWallet = wallet;
+        _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
 
         UserResponse response = new UserResponse
         {
-            Email = user.Email
+            Email = newUser.Email
         };
 
         return new ServiceResult<UserResponse>(

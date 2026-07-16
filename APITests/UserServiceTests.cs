@@ -372,4 +372,23 @@ public class UserServiceTests
         Assert.True(result.Success);
         Assert.Equal("Successfully deleted user.", result.Log);
     }
+
+
+    [Fact]
+    public async Task CreateNewUser_AddsCreditWallet_ReturnsSuccess()
+    {
+        await using var context = CreateDbContext();
+        var service = new UserService(context);
+        var request = new CreateUserRequest
+        {
+            Email = "JaneDoe@hotmail.com",
+            Password = "SecurePassword123"
+        };
+        await service.CreateUserAsync(request);
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == "JaneDoe@hotmail.com");
+        Assert.NotNull(user);
+        var wallet = await context.Wallets.FirstOrDefaultAsync(w => w.UserId == user.Id);
+        Assert.NotNull(wallet);
+        Assert.Equal(user.Id, wallet.UserId);
+    }
 }
