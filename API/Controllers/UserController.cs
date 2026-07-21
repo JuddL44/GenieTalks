@@ -9,13 +9,12 @@ using Microsoft.EntityFrameworkCore;
 public class UserController: ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly UserService _userService;
-    public UserController(AppDbContext context, UserService userService)
+    private readonly IUserService _userService;
+    public UserController(AppDbContext context, IUserService userService)
     {
         _context = context;
         _userService = userService;
     }
-
 
     [HttpPost("register")]
     public async Task<IActionResult> CreateUser(CreateUserRequest user)
@@ -41,7 +40,6 @@ public class UserController: ControllerBase
         }
         return Ok(result.Data);
     }
-
 
     [Authorize]
     [HttpGet]
@@ -77,7 +75,6 @@ public class UserController: ControllerBase
             return BadRequest(new {message = result.Log});
         }
     }
-
 
     [Authorize]
     [HttpDelete]

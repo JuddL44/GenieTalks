@@ -1,0 +1,20 @@
+Hello
+<label for="email">Email</label>
+<input id="email" type="email" name="email" [(ngModel)]="email" required />
+
+<label for="password">Password</label>
+<input id="password" type="password" name="password" [(ngModel)]="password" required />
+
+<button type="submit" (click)="login()">Log in</button>
+<button type="submit" (click)="register()">Register</button>
+
+@if (authService.isLoggedIn()) {
+  You are logged in
+  <button type="submit" (click)="logout()">Log Out Here</button>
+} @else {
+  You are not logged in
+}
+
+@if (errorMessage) {
+  <p>{{ errorMessage }}</p>
+}
