@@ -202,7 +202,49 @@ public class UserService : IUserService
         );
     }
 
+    public async Task<ServiceResult<AuthResponse>> LoginUserAsync(UserLoginRequest userReq)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userReq.Email);
+        if (user == null)
+        {
+            return new ServiceResult<AuthResponse>
+            (
+                false,
+                null,
+                "Invalid email or password."
+            );
+        }
+        PasswordService _service = new PasswordService(); 
+        var passwordResult = _service.Verify(userReq.Password, user.PasswordHash);
+        if (passwordResult == false)
+        {
+            return new ServiceResult<AuthResponse>
+            (
+                false,
+                null,
+                "Invalid email or password."
+            );
+        }
 
+        var token = _tokenService.CreateToken(user);
+
+        var response = new AuthResponse
+        {
+            Token = token,
+            ExpiresAtUtc = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
+            User = new UserResponse
+            {
+                Email = user.Email
+            }
+        };
+
+        return new ServiceResult<AuthResponse>
+        (
+            true,
+            response,
+            "Success!"
+        );
+    }
     bool IsValidEmailFormat(string email)
     {
         if (string.IsNullOrWhiteSpace(email)) {return false;}
@@ -228,5 +270,7 @@ public class UserService : IUserService
         if (!password.Any(char.IsDigit)) return "Password must contain atleast one number!";
         return "Success";
     }
+
+
 }
 

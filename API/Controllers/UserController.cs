@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,36 +17,7 @@ public class UserController: ControllerBase
     }
 
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserById(Guid id)
-    {
-        var result = await _userService.GetUserByIdAsync(id);
-        if (result.Success == true)
-        {
-            return Ok(result.Data);
-        }
-        else
-        {
-            return BadRequest(new {message = result.Log});
-        }
-
-    }
-
-    [HttpPatch("{id}")]
-    public async Task<IActionResult> UpdateUserById(UpdateUserRequest update, Guid id)
-    {
-        var result = await _userService.UpdateUserByIdAsync(update, id);
-        if (result.Success == true)
-        {
-            return Ok(result.Data);
-        }
-        else
-        {
-            return BadRequest(new {message = result.Log});
-        }
-    }
-
-    [HttpPost]
+    [HttpPost("register")]
     public async Task<IActionResult> CreateUser(CreateUserRequest user)
     {
         var result = await _userService.CreateUserAsync(user);
@@ -58,11 +31,62 @@ public class UserController: ControllerBase
         }
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUserById(Guid id)
+    [HttpPost("login")]
+    public async Task<IActionResult> LoginUser(UserLoginRequest userReq)
     {
-        var result = await _userService.DeleteUserByIdAsync(id);
-        if (result.Success == true)
+        var result = await _userService.LoginUserAsync(userReq);
+        if (!result.Success)
+        {
+            return Unauthorized(result.Log);
+        }
+        return Ok(result.Data);
+    }
+
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> GetUser()
+    {
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdValue, out var userId)) { return Unauthorized(); }
+        var result = await _userService.GetUserByIdAsync(userId);
+        if (result.Success)
+        {
+            return Ok(result.Data);
+        }
+        else
+        {
+            return BadRequest(new {message = result.Log});
+        }
+
+    }
+
+    [Authorize]
+    [HttpPatch]
+    public async Task<IActionResult> UpdateUser(UpdateUserRequest update)
+    {
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdValue, out var userId)) { return Unauthorized(); }
+        var result = await _userService.UpdateUserByIdAsync(update, userId);
+        if (result.Success)
+        {
+            return Ok(result.Data);
+        }
+        else
+        {
+            return BadRequest(new {message = result.Log});
+        }
+    }
+
+
+    [Authorize]
+    [HttpDelete]
+    public async Task<IActionResult> DeleteUser()
+    {
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdValue, out var userId)) { return Unauthorized(); }
+        var result = await _userService.DeleteUserByIdAsync(userId);
+        if (result.Success)
         {
             return Ok(result.Data);
         }
