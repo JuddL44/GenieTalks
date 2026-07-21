@@ -7,4 +7,5 @@ public class AppDbContext : DbContext
     }
     public DbSet<User> Users {get; set;}
     public DbSet<CreditWallet> Wallets {get; set;}
+    public DbSet<CreditPurchase> Transactions {get; set;}
 }

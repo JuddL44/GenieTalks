@@ -150,3 +150,4 @@ C:\Users\lasat\OneDrive\Desktop\New folder (2)\GenieTalks\APITests\obj\Debug\net
 C:\Users\lasat\OneDrive\Desktop\New folder (2)\GenieTalks\APITests\obj\Debug\net8.0\APITests.genruntimeconfig.cache
 C:\Users\lasat\OneDrive\Desktop\New folder (2)\GenieTalks\APITests\obj\Debug\net8.0\ref\APITests.dll
 C:\Users\lasat\OneDrive\Desktop\New folder (2)\GenieTalks\APITests\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+c:\Users\lasat\OneDrive\Desktop\New folder (2)\GenieTalks\APITests\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

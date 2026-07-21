@@ -1,18 +1,23 @@
 using System.Net.Mail;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 public class UserService : IUserService
 {
     private readonly AppDbContext _context;
+    private readonly ITokenService _tokenService;
+    private readonly JwtSettings _jwtSettings;
 
-    public UserService(AppDbContext context)
+    public UserService(AppDbContext context, ITokenService tokenService, IOptions<JwtSettings> jwtSettings)
     {
         _context = context;
+        _jwtSettings = jwtSettings.Value;
+        _tokenService = tokenService;
     }
 
 
-    public async Task<ServiceResult<UserResponse>> CreateUserAsync(CreateUserRequest userReq)
+    public async Task<ServiceResult<AuthResponse>> CreateUserAsync(CreateUserRequest userReq)
     {
         //
         // Is the password valid?
@@ -20,7 +25,7 @@ public class UserService : IUserService
         string passwordStatus = IsValidPasswordFormat(userReq.Password);
         if (passwordStatus != "Success")
         {
-            return new ServiceResult<UserResponse>
+            return new ServiceResult<AuthResponse>
             (
                 false,
                 null,
@@ -32,7 +37,7 @@ public class UserService : IUserService
         //
         if (!IsValidEmailFormat(userReq.Email))
         {
-            return new ServiceResult<UserResponse>
+            return new ServiceResult<AuthResponse>
             (
                 false,
                 null,
@@ -45,7 +50,7 @@ public class UserService : IUserService
         var existingEmail = await _context.Users.AnyAsync(e => e.Email == userReq.Email); 
         if (existingEmail)
         {
-            return new ServiceResult<UserResponse>
+            return new ServiceResult<AuthResponse>
             (
                 false,
                 null,
@@ -71,12 +76,19 @@ public class UserService : IUserService
         _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
 
-        UserResponse response = new UserResponse
+        var token = _tokenService.CreateToken(newUser);
+
+        AuthResponse response = new AuthResponse
         {
-            Email = newUser.Email
+            Token = token,
+            ExpiresAtUtc = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
+            User = new UserResponse
+            {
+                Email = newUser.Email
+            }
         };
 
-        return new ServiceResult<UserResponse>(
+        return new ServiceResult<AuthResponse>(
             true,
             response,
             "Success!"
@@ -85,7 +97,7 @@ public class UserService : IUserService
 
     public async Task<ServiceResult<UserResponse>> GetUserByIdAsync(Guid id)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
         if (user != null)
         {
             var response = new UserResponse

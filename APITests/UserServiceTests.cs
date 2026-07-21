@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 public class UserServiceTests
 {
@@ -9,6 +10,22 @@ public class UserServiceTests
     {
         var options = new DbContextOptionsBuilder<AppDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
         return new AppDbContext(options);
+    }
+
+
+    private static UserService CreateUserService(AppDbContext context)
+    {
+        var jwtSettings = new JwtSettings
+        {
+            Issuer = "TestApi",
+            Audience = "TestClient",
+            Key = "super-secret-key-that-is-used-for-testing-purposes",
+            ExpirationMinutes = 120
+        };
+
+        var jwtOptions = Options.Create(jwtSettings);
+        var tokenService = new TokenService(jwtOptions);
+        return new UserService(context, tokenService, jwtOptions);
     }
 
 
@@ -22,7 +39,7 @@ public class UserServiceTests
             PasswordHash = "john-doe-password-hash"
         });
         await context.SaveChangesAsync();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
 
         var request = new CreateUserRequest
         {
@@ -39,7 +56,7 @@ public class UserServiceTests
     public async Task CreateUserAsync_ContainsInvalidEmail_ReturnsFailure()
     {
         await using var context = CreateDbContext();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var request = new CreateUserRequest
         {
             Email = "JohnDoe@gmailcom",
@@ -53,7 +70,7 @@ public class UserServiceTests
     public async Task CreateUserAsync_NoUppercaseWithinPassword_ReturnsFailure()
     {
         await using var context = CreateDbContext();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var request = new CreateUserRequest
         {
             Email = "JohnDoe@gmail.com",
@@ -67,7 +84,7 @@ public class UserServiceTests
     public async Task CreateUserAsync_NoLowercaseithinPassword_ReturnsFailure()
     {
         await using var context = CreateDbContext();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var request = new CreateUserRequest
         {
             Email = "JohnDoe@gmail.com",
@@ -81,7 +98,7 @@ public class UserServiceTests
     public async Task CreateUserAsync_NoNumberWithinPassword_ReturnsFailure()
     {
         await using var context = CreateDbContext();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var request = new CreateUserRequest
         {
             Email = "JohnDoe@gmail.com",
@@ -95,7 +112,7 @@ public class UserServiceTests
     public async Task CreateUserAsync_PasswordLessThan7Characters_ReturnsFailure()
     {
         await using var context = CreateDbContext();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var request = new CreateUserRequest
         {
             Email = "JohnDoe@gmail.com",
@@ -109,7 +126,7 @@ public class UserServiceTests
     public async Task CreateUserAsync_PasswordMoreThan26Characters_ReturnsFailure()
     {
         await using var context = CreateDbContext();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var request = new CreateUserRequest
         {
             Email = "JohnDoe@gmail.com",
@@ -124,7 +141,7 @@ public class UserServiceTests
     public async Task CreateUserAsync_EverythingValid_ReturnsSuccess()
     {
         await using var context = CreateDbContext();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var request = new CreateUserRequest
         {
             Email = "JaneDoe@hotmail.com",
@@ -133,8 +150,8 @@ public class UserServiceTests
         var result = await service.CreateUserAsync(request);
         Assert.True(result.Success);
         Assert.Equal("Success!", result.Log);
-        Assert.Equal("JaneDoe@hotmail.com", result.Data?.Email);
-        Assert.Equal("JaneDoe", result.Data?.ShortenedEmail);
+        Assert.Equal("JaneDoe@hotmail.com", result.Data?.User.Email);
+        Assert.Equal("JaneDoe", result.Data?.User.ShortenedEmail);
         Assert.Equal(1, await context.Users.CountAsync());
     }
 
@@ -158,7 +175,7 @@ public class UserServiceTests
         context.Users.Add(user);
         await context.SaveChangesAsync();
 
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var result = await service.GetUserByIdAsync(user.Id);
 
         Assert.True(result.Success);
@@ -171,7 +188,7 @@ public class UserServiceTests
     {
         await using var context = CreateDbContext();
         Guid fakeId = new Guid();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var result = await service.GetUserByIdAsync(fakeId);
         Assert.False(result.Success);
         Assert.Equal($"Could not find user with ID: {fakeId}", result.Log);
@@ -182,7 +199,7 @@ public class UserServiceTests
     {
         await using var context = CreateDbContext();
         Guid fakeId = new Guid();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         UpdateUserRequest request = new UpdateUserRequest
         {
             Email = null,
@@ -204,7 +221,7 @@ public class UserServiceTests
         };
         await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         UpdateUserRequest request = new UpdateUserRequest
         {
             Email = "JohnDoe@gmailcom",
@@ -226,7 +243,7 @@ public class UserServiceTests
         };
         await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         UpdateUserRequest request = new UpdateUserRequest
         {
             Email = "JaneDoe@hotmail.com",
@@ -248,7 +265,7 @@ public class UserServiceTests
         };
         await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         UpdateUserRequest request = new UpdateUserRequest
         {
             Email = "JaneDoe@hotmail.com",
@@ -270,7 +287,7 @@ public class UserServiceTests
         };
         await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         UpdateUserRequest request = new UpdateUserRequest
         {
             Email = "JaneDoe@hotmail.com",
@@ -292,7 +309,7 @@ public class UserServiceTests
         };
         await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         UpdateUserRequest request = new UpdateUserRequest
         {
             Email = "JaneDoe@hotmail.com",
@@ -313,7 +330,7 @@ public class UserServiceTests
         };
         await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         UpdateUserRequest request = new UpdateUserRequest
         {
             Email = "JaneDoe@hotmail.com",
@@ -334,7 +351,7 @@ public class UserServiceTests
         };
         await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         UpdateUserRequest request = new UpdateUserRequest
         {
             Email = "JaneDoe@hotmail.com",
@@ -350,7 +367,7 @@ public class UserServiceTests
     {
         await using var context = CreateDbContext();
         Guid fakeId = new Guid();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var result = await service.DeleteUserByIdAsync(fakeId);
         Assert.False(result.Success);
         Assert.Equal($"Could not find user with ID: {fakeId}", result.Log);
@@ -367,7 +384,7 @@ public class UserServiceTests
         };
         await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var result = await service.DeleteUserByIdAsync(user.Id);
         Assert.True(result.Success);
         Assert.Equal("Successfully deleted user.", result.Log);
@@ -378,7 +395,7 @@ public class UserServiceTests
     public async Task CreateNewUser_AddsCreditWallet_ReturnsSuccess()
     {
         await using var context = CreateDbContext();
-        var service = new UserService(context);
+        var service = CreateUserService(context);
         var request = new CreateUserRequest
         {
             Email = "JaneDoe@hotmail.com",

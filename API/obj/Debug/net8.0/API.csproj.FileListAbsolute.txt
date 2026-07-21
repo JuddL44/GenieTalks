@@ -137,3 +137,4 @@ C:\Users\lasat\OneDrive\Desktop\New folder (2)\GenieTalks\API\obj\Debug\net8.0\r
 C:\Users\lasat\OneDrive\Desktop\New folder (2)\GenieTalks\API\obj\Debug\net8.0\API.pdb
 C:\Users\lasat\OneDrive\Desktop\New folder (2)\GenieTalks\API\obj\Debug\net8.0\API.genruntimeconfig.cache
 C:\Users\lasat\OneDrive\Desktop\New folder (2)\GenieTalks\API\obj\Debug\net8.0\ref\API.dll
+c:\Users\lasat\OneDrive\Desktop\New folder (2)\GenieTalks\API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
